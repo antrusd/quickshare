@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import socketserver
 import http.server
@@ -8,9 +8,14 @@ import string
 import glob
 import sys
 import pdb
+import os
 
 
 class QuickShare(http.server.SimpleHTTPRequestHandler):
+
+    def __init__(self, server, uri, filename):
+        self.firstname = fname
+        self.lastname = lname
 
     def do_GET(self):
         pdb.set_trace()
@@ -45,27 +50,34 @@ class QuickShare(http.server.SimpleHTTPRequestHandler):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Simple Quick File Sharing')
 
-    parser.add_argument('-f', action='store', dest='file',
+    parser.add_argument(dest='filename',
                         help='file to share')
     parser.add_argument('-u', action='store', dest='uri',
                         default=''.join(random.choice(string.ascii_letters) for i in range(10)),
                         help='specify the uri link, default random')
-    parser.add_argument('-s', action='store', dest='server',
+    parser.add_argument('-s', action='store', dest='host',
                         default='0.0.0.0',
-                        help='specify the server or ip to listen, default 0.0.0.0')
+                        help='specify the host/ip, default 0.0.0.0')
     parser.add_argument('-p', action='store', dest='port',
                         default='0',
-                        help='specify the port to listen, default random')
+                        help='specify the port, default random')
     parser.add_argument('-t', action='store', dest='time',
                         type=int,
                         default=300,
-                        help='specify how long we serve in seconds, default 300s (5 minutes)')
+                        help='specify how long we serve in seconds, default 300s')
 
     results = parser.parse_args()
 
     uri = results.uri
-    host = results.server
+    host = results.host
     port = results.port
-    server = ':'.join(host, port)
+    server = ':'.join([host, port])
 
-    Server.serve_forever(8000)
+    filename = results.filename
+    if not os.access(filename, os.R_OK):
+        print("ERROR: Cannot read {0}".format(filename))
+        sys.exit(1)
+
+    #qshare = QuickShare
+
+    #Server.serve_forever(8000)
